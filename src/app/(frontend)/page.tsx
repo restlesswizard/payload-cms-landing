@@ -7,53 +7,33 @@ import { fileURLToPath } from 'url'
 import config from '@/payload.config'
 import './styles.css'
 
+// Импортируем компоненты
+import { Hero } from './components/Hero'
+import { Features } from './components/Features'
+import { CTA } from './components/CTA'
+
 export default async function HomePage() {
   const headers = await getHeaders()
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
-  const { user } = await payload.auth({ headers })
+  await payload.auth({ headers }) // можно убрать user, если он не нужен
 
-  const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`
+  const landingData = await payload.find({
+    collection: 'landing',
+    limit: 1,
+  })
+
+  const landing = landingData.docs[0]
 
   return (
-    <div className="home">
-      <div className="content">
-        <picture>
-          <source srcSet="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg" />
-          <Image
-            alt="Payload Logo"
-            height={65}
-            src="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg"
-            width={65}
-          />
-        </picture>
-        {!user && <h1>Welcome to your new project.</h1>}
-        {user && <h1>Welcome back, {user.email}</h1>}
-        <div className="links">
-          <a
-            className="admin"
-            href={payloadConfig.routes.admin}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Go to admin panel
-          </a>
-          <a
-            className="docs"
-            href="https://payloadcms.com/docs"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Documentation
-          </a>
-        </div>
-      </div>
-      <div className="footer">
-        <p>Update this page by editing</p>
-        <a className="codeLink" href={fileURL}>
-          <code>app/(frontend)/page.tsx</code>
-        </a>
-      </div>
-    </div>
+    <main>
+      {landing?.title && landing?.heroText && (
+        <Hero title={landing.title} heroText={landing.heroText} />
+      )}
+
+      {landing?.features && <Features features={landing.features} />}
+
+      {landing?.cta && <CTA text={landing.cta.text} link={landing.cta.link} />}
+    </main>
   )
 }
