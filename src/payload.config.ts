@@ -35,7 +35,4 @@ export default buildConfig({
     payloadCloudPlugin(),
     // storage-adapter-placeholder
   ],
-  onInit: async () => {
-    console.log('Connected to DB:', process.env.DATABASE_URI)
-  },
 })
