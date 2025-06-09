@@ -23,7 +23,7 @@ export default async function HomePage() {
     limit: 1,
   })
 
-  const landing = landingData.docs[0]
+  const landing = landingData.docs[0] as any
 
   return (
     <main>
